@@ -18,6 +18,8 @@ USER_AGENT = [ "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:24.0) Gecko/2010
                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/537.36",
                    "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2224.3 Safari/537.36",
                    "Opera/9.80 (Windows NT 6.1; U; zh-cn) Presto/2.9.168 Version/11.5"]
+
+#代理IP，暂未使用
 PROXY_IP =[
             "192.126.131.178:8800",
             "192.126.148.100:8800",
