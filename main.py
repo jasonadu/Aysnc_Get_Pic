@@ -126,21 +126,26 @@ def showMain():
 
 
 def allowed_file(filename):
+    “”“ 文件上传后缀名过滤/前端也做了这个工作”“”
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
+    """CSV文件提交接口"""
     if request.method == 'POST' and session.get('logged_in'):
         file = request.files['file']
         if file and allowed_file(file.filename):
             url_list = set([url for url in file.readlines()])
             db = get_db()
+            #以当前utc时间作为job名称
             jobname = datetime.datetime.utcnow().strftime('%Y-%m-%d-%H-%M-%S-%f')
-            print jobname
+            #print jobname
+            #将用户信息、job名存入数据库job表
             cur = db.execute('INSERT INTO job (username, jobname) VALUES (?, ?)',
                              [session['username'], jobname])
+            #将每个csv/job的产品url存入数据库detail表
             values = [(jobname, url) for url in url_list]
             cur.executemany('INSERT INTO detail (jobname,itemurl)VALUES (?, ?)', values)
             db.commit()
@@ -151,9 +156,7 @@ def upload_file():
 @app.route('/downloads/<filename>')
 def download_file(filename):
     """
-    转下载地址
-    :param filename:
-    :return:
+    根据文件名转下载地址
     """
     return send_from_directory(app.config['DOWNNLOAD_FOLDER'],
                                filename)
@@ -162,8 +165,7 @@ def download_file(filename):
 @app.route('/get_job_list')
 def get_job_list():
     """
-    获取任务状态
-    :return:
+    获取任务列表及状态
     """
     if session.get('logged_in'):
         username = session["username"]
@@ -186,9 +188,7 @@ def get_job_list():
 @app.route("/clean/<password>")
 def clean(password):
     """
-    删除数据库中已经完成的任务记录
-    :param password:
-    :return:
+    删除数据库中已经完成的任务记录的WEB API
     """
     if password == "starmerx123":
         try:
@@ -211,12 +211,14 @@ def async(f):
 
 @async
 def async_worker():
+    """异步任务worker"""
     from getpic import rake
     rake()
 
 
 @app.route("/test")
 def test():
+    """测试Ajax请求"""
     import random
     num = random.randint(1, 100)
     return jsonify({"jobname": "Tacey", "num": num})
